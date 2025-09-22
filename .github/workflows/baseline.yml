@@ -27,13 +27,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: baseline-report
-          path: baseline-report.json
+          path: data/baseline-report.json
 
       - name: Commit report to repo
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add baseline-report.json
+          git add data/baseline-report.json
           git commit -m "Update baseline report [skip ci]" || echo "No changes to commit"
           git push
 
