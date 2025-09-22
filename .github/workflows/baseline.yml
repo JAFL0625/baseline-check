@@ -23,3 +23,10 @@ jobs:
 
       - name: Run baseline check
         run: node index.js
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-report
+          path: data/baseline-report.json
+
