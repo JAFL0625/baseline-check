@@ -2,30 +2,30 @@
 const fs = require('fs');
 const bcd = require('@mdn/browser-compat-data');
 
-console.log('=== Baseline Feature Report ===');
+console.log('=== Baseline Feature Report (fixed paths) ===');
 
-// Lista de features de ejemplo (podemos ampliar luego)
+// Features con sus rutas reales dentro del paquete
 const features = [
-  'css.flexbox',
-  'css.grid',
-  'javascript.bigint',
-  'html.canvas'
+  { name: 'CSS Flexbox', path: bcd.css.properties.flex },
+  { name: 'CSS Grid', path: bcd.css.properties.grid },
+  { name: 'JavaScript BigInt', path: bcd.javascript.builtins.BigInt },
+  { name: 'HTML Canvas', path: bcd.html.elements.canvas }
 ];
 
-const report = features.map(feature => {
-  const data = bcd[feature.split('.')[0]][feature.split('.')[1]];
-  const support = data.__compat.support;
+const browsers = ['chrome', 'firefox', 'safari', 'edge'];
 
-  // Contamos navegadores principales
-  const browsers = ['chrome', 'firefox', 'safari', 'edge'];
-  const compatible = browsers.filter(b => support[b] && support[b].version_added);
-
+const report = features.map(f => {
+  const support = f.path.__compat.support;
+  const compatible = browsers.filter(b =>
+    support[b] && support[b].version_added
+  );
   return {
-    feature,
+    feature: f.name,
     compatibleBrowsers: compatible,
     baselineOK: compatible.length === browsers.length
   };
 });
 
+if (!fs.existsSync('data')) fs.mkdirSync('data');
 fs.writeFileSync('data/baseline-report.json', JSON.stringify(report, null, 2));
 console.log('Report generated at data/baseline-report.json');
