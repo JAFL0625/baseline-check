@@ -18,7 +18,6 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        # if you have package-lock.json, npm ci is faster and deterministic
         run: npm ci
 
       - name: Run baseline check
@@ -28,5 +27,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: baseline-report
-          path: data/baseline-report.json
+          path: baseline-report.json
+
+      - name: Commit report to repo
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add baseline-report.json
+          git commit -m "Update baseline report [skip ci]" || echo "No changes to commit"
+          git push
+
 
