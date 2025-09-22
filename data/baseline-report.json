@@ -1,0 +1,37 @@
+[
+  {
+    "feature": "CSS Flexbox",
+    "compatibleBrowsers": [],
+    "baselineOK": false
+  },
+  {
+    "feature": "CSS Grid",
+    "compatibleBrowsers": [
+      "chrome",
+      "firefox",
+      "safari",
+      "edge"
+    ],
+    "baselineOK": true
+  },
+  {
+    "feature": "JavaScript BigInt",
+    "compatibleBrowsers": [
+      "chrome",
+      "firefox",
+      "safari",
+      "edge"
+    ],
+    "baselineOK": true
+  },
+  {
+    "feature": "HTML Canvas",
+    "compatibleBrowsers": [
+      "chrome",
+      "firefox",
+      "safari",
+      "edge"
+    ],
+    "baselineOK": true
+  }
+]
