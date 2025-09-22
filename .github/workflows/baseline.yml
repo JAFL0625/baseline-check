@@ -22,6 +22,9 @@ jobs:
 
       - name: Run baseline check
         run: node index.js
+      
+      - name: Generate Markdown table
+        run: node generate-table.js
 
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
@@ -35,7 +38,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add data/baseline-report.json
+          git add data/baseline-report.json BASELINE_TABLE.md         
           git commit -m "Update baseline report [skip ci]" || echo "No changes to commit"
           git push
 
