@@ -15,7 +15,11 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '18'
+
+      - name: Install dependencies
+        # if you have package-lock.json, npm ci is faster and deterministic
+        run: npm ci
 
       - name: Run baseline check
         run: node index.js
