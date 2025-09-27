@@ -1,26 +1,41 @@
-
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const fs = require('fs');
+const path = require('path');
 
-// GET all users
-router.get('/users', (req, res) => {
-  db.all('SELECT * FROM users', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+// GET /api/report  -> devuelve el baseline-report.json
+router.get('/report', (req, res) => {
+  const reportPath = path.join(__dirname, '../data/baseline-report.json');
+
+  if (!fs.existsSync(reportPath)) {
+    return res.status(404).json({ error: 'Report file not found. Run the baseline action first.' });
+  }
+
+  const reportData = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+  res.json(reportData);
 });
 
-// POST new user
-router.post('/users', (req, res) => {
-  const { name, email } = req.body;
-  db.run('INSERT INTO users (name, email) VALUES (?, ?)',
-    [name, email],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID, name, email });
-    }
-  );
+// ✅ NUEVA RUTA DE COMPATIBILIDAD
+router.post('/compatibility', (req, res) => {
+  const { features = [], targets = [] } = req.body;
+
+  const featuresData = {
+    "CSS Flexbox": ["chrome", "firefox", "safari", "edge"],
+    "CSS Grid": ["chrome", "firefox", "safari", "edge"],
+    "JavaScript BigInt": ["chrome", "firefox", "safari", "edge"],
+    "HTML Canvas": ["chrome", "firefox", "safari", "edge"],
+  };
+
+  const results = features.map(feature => {
+    const supported = featuresData[feature] || [];
+    const baselineOK = targets.length === 0
+      ? supported.length > 0
+      : targets.every(t => supported.includes(t.toLowerCase()));
+
+    return { feature, compatibleBrowsers: supported, baselineOK };
+  });
+
+  res.json(results);
 });
 
 module.exports = router;
