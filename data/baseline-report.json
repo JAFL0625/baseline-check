@@ -1,37 +1,42 @@
 [
   {
     "feature": "CSS Flexbox",
-    "compatibleBrowsers": [],
-    "baselineOK": false
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge", "opera"],
+    "baselineOK": true
   },
   {
     "feature": "CSS Grid",
-    "compatibleBrowsers": [
-      "chrome",
-      "firefox",
-      "safari",
-      "edge"
-    ],
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
     "baselineOK": true
   },
   {
     "feature": "JavaScript BigInt",
-    "compatibleBrowsers": [
-      "chrome",
-      "firefox",
-      "safari",
-      "edge"
-    ],
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
     "baselineOK": true
   },
   {
     "feature": "HTML Canvas",
-    "compatibleBrowsers": [
-      "chrome",
-      "firefox",
-      "safari",
-      "edge"
-    ],
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
     "baselineOK": true
+  },
+  {
+    "feature": "CSS Variables",
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge", "opera"],
+    "baselineOK": true
+  },
+  {
+    "feature": "Service Workers",
+    "compatibleBrowsers": ["chrome", "firefox", "edge"],
+    "baselineOK": true
+  },
+  {
+    "feature": "WebAssembly",
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
+    "baselineOK": true
+  },
+  {
+    "feature": "Web Bluetooth API",
+    "compatibleBrowsers": ["chrome", "edge"],
+    "baselineOK": false
   }
 ]
