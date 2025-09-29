@@ -6,32 +6,52 @@
   },
   {
     "feature": "CSS Grid",
-    "compatibleBrowsers": [
-      "chrome",
-      "firefox",
-      "safari",
-      "edge"
-    ],
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
+    "baselineOK": true
+  },
+  {
+    "feature": "CSS Subgrid",
+    "compatibleBrowsers": ["firefox"],
+    "baselineOK": false
+  },
+  {
+    "feature": "CSS Variables",
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge", "opera"],
     "baselineOK": true
   },
   {
     "feature": "JavaScript BigInt",
-    "compatibleBrowsers": [
-      "chrome",
-      "firefox",
-      "safari",
-      "edge"
-    ],
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
     "baselineOK": true
   },
   {
     "feature": "HTML Canvas",
-    "compatibleBrowsers": [
-      "chrome",
-      "firefox",
-      "safari",
-      "edge"
-    ],
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
     "baselineOK": true
+  },
+  {
+    "feature": "Service Workers",
+    "compatibleBrowsers": ["chrome", "firefox", "edge"],
+    "baselineOK": true
+  },
+  {
+    "feature": "Web Bluetooth API",
+    "compatibleBrowsers": ["chrome", "edge"],
+    "baselineOK": false
+  },
+  {
+    "feature": "Web Speech API",
+    "compatibleBrowsers": ["chrome", "firefox"],
+    "baselineOK": false
+  },
+  {
+    "feature": "WebAssembly",
+    "compatibleBrowsers": ["chrome", "firefox", "safari", "edge"],
+    "baselineOK": true
+  },
+  {
+    "feature": "WebGPU",
+    "compatibleBrowsers": ["chrome", "edge"],
+    "baselineOK": false
   }
 ]
