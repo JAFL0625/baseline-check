@@ -1,4 +1,3 @@
-// index.js
 const fs = require('fs');
 const bcd = require('@mdn/browser-compat-data');
 
@@ -34,27 +33,47 @@ function collectFeatures(obj, prefix = '') {
  *   – CSS: solo propiedades (css.properties)
  *   – HTML: solo elementos (html.elements)
  *   – JS: solo builtins (javascript.builtins)
+ *   – Web APIs: toda la sección api
  */
 const autoFeatures = [
-  ...collectFeatures(bcd.css.properties, 'css.properties'),
-  ...collectFeatures(bcd.html.elements,  'html.elements'),
-  ...collectFeatures(bcd.javascript.builtins, 'javascript.builtins')
+  ...collectFeatures(bcd.css.properties),
+  ...collectFeatures(bcd.html.elements),
+  ...collectFeatures(bcd.javascript.builtins),
+  ...collectFeatures(bcd.api)
 ];
 
 console.log(`✔ Encontradas ${autoFeatures.length} features filtradas.`);
 
-const report = autoFeatures.map(f => {
-  const support = f.path.__compat.support;
-  const compatible = browsers.filter(
-    b => support[b] && support[b].version_added
-  );
-  return {
-    feature: f.name,
-    compatibleBrowsers: compatible,
-    baselineOK: compatible.length === browsers.length
-  };
+// Generar report y mapa legible
+const report = [];
+const nameMap = {};
+
+autoFeatures.forEach(f => {
+  const support = f.path?.__compat?.support;
+  if (!support) return;
+
+  let readableName = f.name
+    .replace('css.properties.', '')
+    .replace('javascript.builtins.', '')
+    .replace('html.elements.', '')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, l => l.toUpperCase());
+
+  report.push({
+    feature: readableName,
+    compatibleBrowsers: browsers.filter(
+      b => support[b] && support[b].version_added
+    ),
+    baselineOK: browsers.every(b => support[b] && support[b].version_added)
+  });
+
+  // Guardar para mapear nombres legibles -> nombre en el reporte
+  nameMap[readableName.toLowerCase()] = readableName;
 });
 
 if (!fs.existsSync('data')) fs.mkdirSync('data');
 fs.writeFileSync('data/baseline-report.json', JSON.stringify(report, null, 2));
+fs.writeFileSync('data/feature-map.json', JSON.stringify(nameMap, null, 2));
+
 console.log('✅ Reporte generado en data/baseline-report.json');
+console.log('✅ Mapa de nombres generado en data/feature-map.json');

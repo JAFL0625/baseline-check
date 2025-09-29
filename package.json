@@ -1,16 +1,12 @@
 {
   "name": "baseline-check",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "build-report": "node index.js",
+    "start": "npm run build-report && node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@mdn/browser-compat-data": "^7.1.7",
     "express": "^5.1.0",
