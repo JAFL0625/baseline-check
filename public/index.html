@@ -1,72 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feature Compatibility</title>
-<style>
-  body { font-family: system-ui, sans-serif; background: #f6f8fa; color: #333; padding: 2rem; }
-  h1 { text-align: center; margin-bottom: 1rem; }
-  form { max-width: 600px; margin: 0 auto 2rem; display: flex; gap: 0.5rem; }
-  input[type="text"] { flex: 1; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; }
-  button { background: #0366d6; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
-  button:hover { background: #0253ad; }
-  table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #fff; border-radius: 6px; overflow: hidden; }
-  th, td { padding: 0.8rem; border-bottom: 1px solid #eee; text-align: left; }
-  th { background: #f0f3f6; }
-  .ok { color: green; font-weight: 600; }
-  .error { color: crimson; font-weight: 600; }
-  .msg { text-align: center; margin-top: 1rem; }
-</style>
-</head>
-<body>
-<h1>Feature Compatibility</h1>
-<form id="checkForm">
-  <input id="featuresInput" type="text" placeholder="Example: CSS Variables, Web Bluetooth API" />
-  <button type="submit">Check</button>
-</form>
-<div id="results" class="msg">Enter features and click "Check".</div>
-
-<script>
-const form = document.getElementById('checkForm');
-const input = document.getElementById('featuresInput');
-const resultsDiv = document.getElementById('results');
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const features = input.value.split(',').map(f => f.trim()).filter(Boolean);
-  if (!features.length) return resultsDiv.innerHTML = '<span class="error">Enter at least one feature</span>';
-
-  resultsDiv.textContent = 'Loading…';
-
-  try {
-    const response = await fetch('/api/compatibility', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ features })
-    });
-
-    const data = await response.json();
-    if (!Array.isArray(data) || data.length === 0) {
-      resultsDiv.innerHTML = '<span class="error">No results found for these features.</span>';
-      return;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feature Compatibility Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: #f2f5f9;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
     }
 
-    let html = '<table><tr><th>Feature</th><th>Compatible Browsers</th><th>Baseline</th></tr>';
-    data.forEach(item => {
-      html += `<tr>
-        <td>${item.feature}</td>
-        <td>${item.compatibleBrowsers.length ? item.compatibleBrowsers.join(', ') : '<span class="error">None</span>'}</td>
-        <td class="${item.baselineOK ? 'ok' : 'error'}">${item.baselineOK ? '✔️' : '❌'}</td>
-      </tr>`;
-    });
-    html += '</table>';
-    resultsDiv.innerHTML = html;
+    h1 {
+      text-align: center;
+      color: #0b3d91;
+      margin-bottom: 0.5rem;
+      font-size: 2rem;
+    }
 
-  } catch (err) {
-    resultsDiv.innerHTML = `<span class="error">Error: ${err.message}</span>`;
-  }
-});
-</script>
+    p.subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 2rem;
+    }
+
+    form {
+      max-width: 650px;
+      margin: 0 auto 2rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #0b3d91;
+      color: #fff;
+      border: none;
+      padding: 0.8rem 1.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+
+    button:hover { background: #092c6c; }
+
+    .results-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    thead {
+      background: #0b3d91;
+      color: #fff;
+    }
+
+    th, td {
+      padding: 0.9rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    tbody tr:hover {
+      background: #f9fbfd;
+    }
+
+    .ok { color: #0a8a00; font-weight: 700; }
+    .error { color: #c30010; font-weight: 700; }
+    .msg { text-align: center; margin-top: 1rem; color: #666; }
+
+    .summary {
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .summary.ok { background: #e7f9ed; color: #1b5e20; }
+    .summary.error { background: #fdecea; color: #b71c1c; }
+  </style>
+</head>
+
+<body>
+  <h1>Feature Compatibility Dashboard</h1>
+  <p class="subtitle">Check which browsers support your chosen web features</p>
+
+  <form id="checkForm">
+    <input id="featuresInput" type="text"
+      placeholder="Example: CSS Variables, Web Bluetooth API, HTML Canvas" />
+    <button type="submit">Check</button>
+  </form>
+
+  <div id="results" class="results-container">
+    <p class="msg">Enter one or more features separated by commas.</p>
+  </div>
+
+  <script>
+    const form = document.getElementById('checkForm');
+    const input = document.getElementById('featuresInput');
+    const resultsDiv = document.getElementById('results');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const features = input.value
+        .split(',')
+        .map(f => f.trim())
+        .filter(Boolean);
+
+      if (!features.length) {
+        resultsDiv.innerHTML = '<p class="msg error">⚠️ Enter at least one feature.</p>';
+        return;
+      }
+
+      resultsDiv.innerHTML = '<p class="msg">⏳ Checking compatibility...</p>';
+
+      try {
+        const response = await fetch('/api/compatibility', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ features })
+        });
+
+        const data = await response.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          resultsDiv.innerHTML = '<p class="msg error">❌ No results found for these features.</p>';
+          return;
+        }
+
+        // Determinar si todas pasan baseline
+        const allOK = data.every(item => item.baselineOK);
+
+        let html = `
+          <div class="summary ${allOK ? 'ok' : 'error'}">
+            ${allOK ? '✅ All features are within baseline' : '⚠️ Some features are not baseline-compatible'}
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Compatible Browsers</th>
+                <th>Baseline</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        data.forEach(item => {
+          const browsers = item.compatibleBrowsers?.length
+            ? item.compatibleBrowsers.join(', ')
+            : '<span class="error">None</span>';
+          html += `
+            <tr>
+              <td>${item.feature}</td>
+              <td>${browsers}</td>
+              <td class="${item.baselineOK ? 'ok' : 'error'}">${item.baselineOK ? '✔️' : '❌'}</td>
+            </tr>`;
+        });
+
+        html += '</tbody></table>';
+        resultsDiv.innerHTML = html;
+
+      } catch (err) {
+        resultsDiv.innerHTML = `<p class="msg error">Error: ${err.message}</p>`;
+      }
+    });
+  </script>
 </body>
 </html>
